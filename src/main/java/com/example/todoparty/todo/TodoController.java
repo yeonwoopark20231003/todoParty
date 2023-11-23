@@ -1,7 +1,6 @@
 package com.example.todoparty.todo;
 
 import com.example.todoparty.CommonResponseDto;
-import com.example.todoparty.user.User;
 import com.example.todoparty.user.UserDTO;
 import com.example.todoparty.user.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
 
 @RequestMapping("/api/todos")
 @RestController
@@ -22,7 +22,7 @@ public class TodoController {
 
     @PostMapping
     public ResponseEntity<TodoResponseDTO> postTodo(@RequestBody TodoRequestDTO todoRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        TodoResponseDTO responseDTO = todoService.createPost(todoRequestDto, userDetails.getUser());
+        TodoResponseDTO responseDTO = todoService.createTodo(todoRequestDto, userDetails.getUser());
 
         return ResponseEntity.status(201).body(responseDTO);
     }
@@ -47,5 +47,18 @@ public class TodoController {
         responseDTOMap.forEach((key, value) -> response.add(new TodoListResponseDTO(key, value)));
 
         return ResponseEntity.ok().body(response);
+    }
+
+
+    //할일카드 수정
+    @PutMapping("/{todoId}")
+    public ResponseEntity<CommonResponseDto> putTodo(@PathVariable Long todoId, @RequestBody TodoRequestDTO todoRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        try{
+            TodoResponseDTO responseDTO = todoService.updateTodo(todoId,todoRequestDto, userDetails.getUser());
+            return ResponseEntity.ok().body(responseDTO);
+        }catch (RejectedExecutionException| IllegalArgumentException ex){
+            return ResponseEntity.badRequest().body(new CommonResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value()));
+        }
+
     }
 }

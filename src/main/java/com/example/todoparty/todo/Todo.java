@@ -4,6 +4,7 @@ import com.example.todoparty.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -34,7 +35,17 @@ public class Todo {
         this.createDate = LocalDateTime.now();
     }
 
+    //연관관계 메서드
     public void setUser(User user){
         this.user = user;
+    }
+
+    //서비스 메서드
+    public void setTitle(String title){
+        this.title = title;
+    }
+
+    public void setContent(String content){
+        this.content = content;
     }
 }
